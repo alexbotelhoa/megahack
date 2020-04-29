@@ -31,19 +31,16 @@ routes.get('/loja', (req, res) => {
    )
 })
 
-routes.get('/a', (req, res) => {
-   const filePath = path.join(__dirname, 'pages/loja', 'index.html')
-   console.log(filePath)
+routes.get('/city3d', (req, res) => {
+   const filePath = path.join(__dirname, 'pages/city3d', 'index.html')
 
-   res.redirect('/')
-   // res.render(filePath, function (err, html) {
-   //    res.send(html)
-   //  })
-   // for other URLs, try responding with the page
-   
-   
-   // read requested file
-   //res.end(req.url)
+   fs.readFile(
+      filePath,
+      (err, content) => {
+         if(err) throw err
+         res.end(content)
+      }
+   )
 })
 
 module.exports = routes

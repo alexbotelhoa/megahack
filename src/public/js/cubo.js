@@ -7,12 +7,8 @@ document.body.appendChild( renderer.domElement );
 
 var geometry = new THREE.BoxGeometry();
 var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-
 var cube = new THREE.Mesh( geometry, material );
 scene.add( cube );
-
-var cube2 = new THREE.Mesh( geometry, material );
-scene.add( cube2 );
 
 camera.position.z = 5;
 
