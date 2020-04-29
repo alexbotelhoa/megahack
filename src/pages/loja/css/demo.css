@@ -1,0 +1,92 @@
+
+/************************************************
+ ***************** PLEASE  **********************
+ **********  LIKE   SHARE   COMMENT  ************
+ ******   SUBSCRIBE SUBSCRIBE SUBSCRIBE  ********
+ ************************************************/
+
+
+ 
+*,
+*:after,
+*:before {
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+.clearfix:before,
+.clearfix:after {
+	display: table;
+	content: '';
+}
+
+.clearfix:after {
+	clear: both;
+}
+
+body {
+	font-family: 'Avenir Next', Avenir, 'Helvetica Neue', 'Lato', 'Segoe UI', Helvetica, Arial, sans-serif;
+	color: #444;
+	background: #ececec;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	overflow-x: hidden;
+}
+
+a {
+	color: #aaa;
+	text-decoration: none;
+}
+
+a:hover,
+a:focus {
+	color: #333;
+	outline: none;
+}
+
+.info {
+	color: #e57373;
+	font-weight: bold;
+	margin: 0;
+	padding: 1em;
+	display: none;
+}
+
+.no-preserve3d .info--support {
+	display: block;
+	position: absolute;
+	bottom: 1em;
+	right: 1em;
+}
+
+
+.codrops-icon span {
+	display: none;
+}
+
+.codrops-icon:before {
+	margin: 0 5px;
+	text-transform: none;
+	font-weight: normal;
+	font-style: normal;
+	font-variant: normal;
+	font-family: 'codropsicons';
+	line-height: 1;
+	speak: none;
+	-webkit-font-smoothing: antialiased;
+}
+
+.codrops-icon--drop:before {
+	content: "\e001";
+}
+
+.codrops-icon--prev:before {
+	content: "\e004";
+}
+
+body #cdawrap {
+	background: transparent;
+    position: absolute;
+    top: auto;
+    bottom: 15px;
+}
