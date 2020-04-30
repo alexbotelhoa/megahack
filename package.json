@@ -17,6 +17,7 @@
     "express": "^4.17.1",
     "sharp": "^0.25.2",
     "socket.io": "^2.3.0",
-    "three": "^0.115.0"
+    "three": "^0.115.0",
+    "three-obj-mtl-loader": "^1.0.3"
   }
 }

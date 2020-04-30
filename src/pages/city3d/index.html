@@ -6,62 +6,14 @@
 	<title>City 3D</title>
 	<style>
 		body { margin: 0; }
-		canvas { display: block; }
+		canvas { width: 100%; height: 100% }
 	</style>
 </head>
 <body>
 	<script src="public/js/three.min.js"></script>
 	<script src="public/js/OrbitControls.js"></script>
+	<script src="public/js/loaders/GLTFLoader.js"></script>
 
 	<script src="public/js/city3d.js"></script>
-
-	<!-- <script>
-		var scene = new THREE.Scene();
-		var camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 10000 );
-
-		var renderer = new THREE.WebGLRenderer();
-		renderer.setSize( window.innerWidth, window.innerHeight );
-		document.body.appendChild( renderer.domElement );
-
-		window.addEventListener('resize', function() {
-			var width = window.innerWidth
-			var height = window.innerHeight
-			renderer.setSize( width, height )
-			camera.aspect = width / height
-			camera.updateProjectionMatrix()
-		})
-
-		var controls = new THREE.OrbitControls(camera, renderer.domElement)
-
-		// Cria a imagem do objeto, coloca a cor e a textura na imagem
-		const geometry = new THREE.BoxGeometry( 1, 1, 1 )
-		const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } )
-		const objeto = new THREE.Mesh( geometry, material )
-		scene.add( objeto )
-
-		// camera.position.z = 5
-		camera.position.set( 0, 0, 5 );
-		controls.update();
-
-		const update = () => {
-			objeto.rotation.x += 0.01;
-			objeto.rotation.y += 0.005;
-		}
-
-		const render = () => {
-			renderer.render( scene, camera )
-		}
-
-		const GameLoop = () => {
-			requestAnimationFrame( GameLoop )
-
-			update()
-			render()
-		}
-		GameLoop()
-
-
-	</script> -->
-
 </body>
 </html>
