@@ -1,12 +1,12 @@
 import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
-import City from './pages/City';
+import SimplePoly from './pages/SimplePoly';
 
 export default function Routes() {
   return (
     <BrowserRouter>
       <Switch>
-        <Route path="/" exact component={City} />
+        <Route path="/" exact component={SimplePoly} />
       </Switch>
     </BrowserRouter>
   )
