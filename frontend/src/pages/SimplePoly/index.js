@@ -7,7 +7,9 @@ import { MTLLoader, OBJLoader } from 'three-obj-mtl-loader'
 
 // SCENE
 const scene = new THREE.Scene()
-scene.background = new THREE.Color( 0x000000 )
+// scene.background = new THREE.Color( 0x000000 )
+scene.background = new THREE.Color().setHSL( 0.6, 0, 1 );
+// scene.fog = new THREE.Fog( scene.background, 10000, 15000 ); // SOMBRA
 
 // CAMERA
 const camera = new THREE.PerspectiveCamera( 
@@ -23,52 +25,52 @@ camera.position.set(
 )
 
 // LIGHT
-const light = new THREE.DirectionalLight( 0xffffff, 1.0)
-light.position.set(0, 3000, 6000)
-scene.add( light )
+var ambientLight = new THREE.AmbientLight( 0x666666, 0.5 )
+scene.add( ambientLight );
 
-// var light = new THREE.DirectionalLight( 0xaabbff, 1.0 );
-// light.position.x = 3000;
-// light.position.y = 2500;
-// light.position.z = 5000;
-// scene.add( light );
+var hemisphereLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 0.5 );
+hemisphereLight.color.setHSL( 0.6, 1, 0.6 );
+hemisphereLight.groundColor.setHSL( 0.095, 1, 0.75 );
+hemisphereLight.position.set( 0, 3000, 0 );
+scene.add( hemisphereLight );
 
-// scene.add( new THREE.AmbientLight( 0x666666 ) );
+var hemisphereLightHelper = new THREE.HemisphereLightHelper( hemisphereLight, 100 );
+scene.add( hemisphereLightHelper );
 
-// var light = new THREE.DirectionalLight( 0xdfebff, 1 );
-// light.position.set( 50, 200, 100 );
-// light.position.multiplyScalar( 1.3 );
+var directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
+directionalLight.color.setHSL( 0.1, 1, 0.95 );
+directionalLight.position.set(- 1, 1.75, 1)
+directionalLight.position.multiplyScalar( 1000 );
+scene.add( directionalLight );
 
-// light.castShadow = true;
+// dirLight.castShadow = true;
+// dirLight.shadow.mapSize.width = 2048;
+// dirLight.shadow.mapSize.height = 2048;
 
-// light.shadow.mapSize.width = 1024;
-// light.shadow.mapSize.height = 1024;
+// var d = 50;
 
-// var d = 300;
+// dirLight.shadow.camera.left = - d;
+// dirLight.shadow.camera.right = d;
+// dirLight.shadow.camera.top = d;
+// dirLight.shadow.camera.bottom = - d;
 
-// light.shadow.camera.left = - d;
-// light.shadow.camera.right = d;
-// light.shadow.camera.top = d;
-// light.shadow.camera.bottom = - d;
+// dirLight.shadow.camera.far = 3500;
+// dirLight.shadow.bias = - 0.0001;
 
-// light.shadow.camera.far = 1000;
-
-// scene.add( light );
-            
-
-
+var directionalLightHeper = new THREE.DirectionalLightHelper( directionalLight, 100 );
+scene.add( directionalLightHeper );
 
 // GROUND
-var groundTexture = new THREE.ImageUtils.loadTexture( 'models/mtl/Textures/Natures/grasslight-big.jpg' );
+var groundTexture = new THREE.ImageUtils.loadTexture( 'models/mtl/Textures/Natures/Floor.png' );
 groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
-groundTexture.repeat.set( 25, 25 );
-groundTexture.anisotropy = 16;
-groundTexture.encoding = THREE.sRGBEncoding;
+groundTexture.repeat.set( 25, 25 )
+// groundTexture.anisotropy = 160
+groundTexture.encoding = THREE.sRGBEncoding
 
 var groundMaterial = new THREE.MeshLambertMaterial( { map: groundTexture } );
 
 var ground = new THREE.Mesh( new THREE.PlaneBufferGeometry( 20000, 20000 ), groundMaterial );
-ground.position.y = - 250;
+ground.position.y =  - 5;
 ground.rotation.x = - Math.PI / 2;
 ground.receiveShadow = true;
 scene.add( ground );
@@ -76,25 +78,28 @@ scene.add( ground );
 
 
 // RENDERER
-const renderer = new THREE.WebGLRenderer()
+const renderer = new THREE.WebGLRenderer({ antialias: true })
+renderer.setPixelRatio( window.devicePixelRatio );
 renderer.setSize( window.innerWidth, window.innerHeight )
 document.body.appendChild( renderer.domElement )
+// renderer.outputEncoding = THREE.sRGBEncoding;
+// renderer.shadowMap.enabled = true;
 
-window.addEventListener('resize', function() {
-   const width = window.innerWidth
-   const height = window.innerHeight
-   renderer.setSize( width, height )
-   camera.aspect = width / height
-   camera.updateProjectionMatrix()
-})
 
 // CONTROLS
 const controls = new OrbitControls(camera, renderer.domElement)
+controls.enableDamping = true;
+controls.dampingFactor = 0.05;
+controls.screenSpacePanning = false;
+controls.maxPolarAngle = Math.PI / 2;
 controls.minDistance = 1000;
 controls.maxDistance = 20000;
-controls.target.set( 0, 0, 0 );
 controls.update();
 
+// DIVERSOS
+// window.addEventListener('resize', onWindowResize, false)
+
+// FUNCTIONS
 function Building (build, x, y, z) {
    const path = 'models/mtl/Models/Buildings/'
    const mtlLoader = new MTLLoader().setPath( path )
@@ -107,7 +112,7 @@ function Building (build, x, y, z) {
       objLoader.setMaterials( materials )
       objLoader.load(build +'.obj', ( object ) => {
          object.traverse(( node ) => node.isMesh ? node.material = material : '')
-         object.position.set(x, y + 6, z)
+         object.position.set(x, y, z)
          scene.add( object )
       })
    })
@@ -125,90 +130,103 @@ function Road (build, x, y, z) {
       objLoader.setMaterials( materials )
       objLoader.load(build +'.obj', ( object ) => {
          object.traverse(( node ) => node.isMesh ? node.material = material : '')
-         object.position.set(x, y + 6, z)
-         object.rotation.y = 1.55
+         object.position.set(x, y, z)
+         object.rotation.y = 1.57 // virar 90° 1.57
          scene.add( object )
       })
    })
 }
 
-function moveHorizontalRua (posicao, adicional = 0) {
-   const espacoEntrePredios = 700
-   const inicioRua = - 7000 + adicional
+function moveHorizontalBuild (posicaoRua, addInicio = 0, addEspaco = 0) {
+   const inicioRua = - 9000 + addInicio
+   const espacoEntrePredios = 700 + addEspaco
+   return inicioRua + ( espacoEntrePredios * posicaoRua )
+}
+
+function moveVerticalBuild (nrquadra, addInicio = 0, addEspaco = 0) {
+   const inicioQuadra = - 9000 + addInicio
+   const espacoEntreQuadras = 700 + addEspaco
+   return inicioQuadra + ( espacoEntreQuadras * nrquadra )
+}
+
+function moveHorizontalRua (posicao, addInicio = 0, addEspaco = 0) {
+   const inicioRua = - 9000 + addInicio
+   const espacoEntrePredios = 700 + addEspaco
    return inicioRua + ( espacoEntrePredios * posicao )
 }
 
-function moveVerticalQuadra (quadra, adicional = 0) {
-   const espacoEntreQuadras = 700
-   const inicioQuadra = - 7000 + adicional
-   return inicioQuadra + ( espacoEntreQuadras * quadra )
+function moveVerticalRua (nrquadra, addInicio = 0, addEspaco = 0) {
+   const inicioQuadra = - 9000 + addInicio
+   const espacoEntreQuadras = 700 + addEspaco
+   return inicioQuadra + ( espacoEntreQuadras * nrquadra )
 }
 
 // EXEMPLO EDIFICIOS = ( Lateral(Numero), Altura, Profundidade(Quadra) )
-let nrQuadra = 1
-Building( 'Building_Auto Service', moveHorizontalRua(1), 0, moveVerticalQuadra(nrQuadra) )
-Building( 'Building_Bakery', moveHorizontalRua(2), 0, moveVerticalQuadra(nrQuadra) )
-Building( 'Building_Bar', moveHorizontalRua(3), 0, moveVerticalQuadra(nrQuadra) )
-Building( 'Building_Books Shop', moveHorizontalRua(4), 0, moveVerticalQuadra(nrQuadra) )
-Building( 'Building_Chicken Shop', moveHorizontalRua(5), 0, moveVerticalQuadra(nrQuadra) )
-Building( 'Building_Clothing', moveHorizontalRua(6), 0, moveVerticalQuadra(nrQuadra) )
-Building( 'Building_Coffee Shop', moveHorizontalRua(7), 0, moveVerticalQuadra(nrQuadra) )
-Building( 'Building_Drug Store', moveHorizontalRua(8), 0, moveVerticalQuadra(nrQuadra) )
-Building( 'Building_Factory', moveHorizontalRua(9), 0, moveVerticalQuadra(nrQuadra) )
-Building( 'Building_Fast Food', moveHorizontalRua(10), 0, moveVerticalQuadra(nrQuadra) )
-Building( 'Building_Fruits  Shop', moveHorizontalRua(11, -550), 0, moveVerticalQuadra(nrQuadra, 600) )
-Building( 'Building_Gas Station', moveHorizontalRua(12), 0, moveVerticalQuadra(nrQuadra) )
-Building( 'Building_Gift Shop', moveHorizontalRua(13), 0, moveVerticalQuadra(nrQuadra) )
-Building( 'Building_Music Store', moveHorizontalRua(14), 0, moveVerticalQuadra(nrQuadra) )
-Building( 'Building_Pizza', moveHorizontalRua(15), 0, moveVerticalQuadra(nrQuadra) )
-Building( 'Building_Restaurant', moveHorizontalRua(16), 0, moveVerticalQuadra(nrQuadra) )
-Building( 'Building_Shoes Shop', moveHorizontalRua(17), 0, moveVerticalQuadra(nrQuadra) )
-Building( 'Building_Super Market', moveHorizontalRua(18), 0, moveVerticalQuadra(nrQuadra) )
+let nrBuild = 1
+let nrRoad = 1
+Building( 'Building_Auto Service', moveHorizontalBuild(nrBuild++), 0, moveVerticalBuild(nrRoad) )
+Building( 'Building_Bakery', moveHorizontalBuild(nrBuild++), 0, moveVerticalBuild(nrRoad) )
+Building( 'Building_Bar', moveHorizontalBuild(nrBuild++), 0, moveVerticalBuild(nrRoad) )
+Building( 'Building_Books Shop', moveHorizontalBuild(nrBuild++), 0, moveVerticalBuild(nrRoad) )
+Building( 'Building_Chicken Shop', moveHorizontalBuild(nrBuild++), 0, moveVerticalBuild(nrRoad) )
+Building( 'Building_Clothing', moveHorizontalBuild(nrBuild++), 0, moveVerticalBuild(nrRoad) )
+Building( 'Building_Coffee Shop', moveHorizontalBuild(nrBuild++), 0, moveVerticalBuild(nrRoad) )
+Building( 'Building_Drug Store', moveHorizontalBuild(nrBuild++), 0, moveVerticalBuild(nrRoad) )
+Building( 'Building_Factory', moveHorizontalBuild(nrBuild++), 0, moveVerticalBuild(nrRoad) )
+Building( 'Building_Fast Food', moveHorizontalBuild(nrBuild++), 0, moveVerticalBuild(nrRoad) )
+Building( 'Building_Fruits  Shop', moveHorizontalBuild(nrBuild++, -550), 0, moveVerticalBuild(nrRoad, 600) )
+Building( 'Building_Gas Station', moveHorizontalBuild(nrBuild++), 0, moveVerticalBuild(nrRoad) )
+Building( 'Building_Gift Shop', moveHorizontalBuild(nrBuild++), 0, moveVerticalBuild(nrRoad) )
+Building( 'Building_Music Store', moveHorizontalBuild(nrBuild++), 155, moveVerticalBuild(nrRoad) )
+Building( 'Building_Pizza', moveHorizontalBuild(nrBuild++), 0, moveVerticalBuild(nrRoad) )
+Building( 'Building_Restaurant', moveHorizontalBuild(nrBuild++), 215, moveVerticalBuild(nrRoad) )
+Building( 'Building_Shoes Shop', moveHorizontalBuild(nrBuild++), 215, moveVerticalBuild(nrRoad) )
+Building( 'Building_Super Market', moveHorizontalBuild(nrBuild++), 0, moveVerticalBuild(nrRoad) )
 
 // EXEMPLOS RUAS
-nrQuadra = 2
-Road( 'Road Concrete Tile Small', moveHorizontalRua(1, -800), 0, moveVerticalQuadra(nrQuadra) )
-Road( 'Road Concrete Tile', moveHorizontalRua(2, -500), 0, moveVerticalQuadra(nrQuadra) )
-Road( 'Road Corner_01', moveHorizontalRua(3, -300), 0, moveVerticalQuadra(nrQuadra) )
-Road( 'Road Corner_02', moveHorizontalRua(4, 100), 0, moveVerticalQuadra(nrQuadra) )
-Road( 'Road Intersection_01', moveHorizontalRua(5, 400), 0, moveVerticalQuadra(nrQuadra) )
-Road( 'Road Intersection_02', moveHorizontalRua(6, 700), 0, moveVerticalQuadra(nrQuadra) )
-Road( 'Road Lane Bus Stop', moveHorizontalRua(7, 1000), 0, moveVerticalQuadra(nrQuadra) )
-Road( 'Road Lane Half', moveHorizontalRua(8, 1300), 0, moveVerticalQuadra(nrQuadra) )
-Road( 'Road Lane_01', moveHorizontalRua(9, 1600), 0, moveVerticalQuadra(nrQuadra) )
-Road( 'Road Lane_02', moveHorizontalRua(10, 1900), 0, moveVerticalQuadra(nrQuadra) )
-Road( 'Road Lane_03', moveHorizontalRua(11, 2200), 0, moveVerticalQuadra(nrQuadra) )
-Road( 'Road Lane_04', moveHorizontalRua(12, 2500), 0, moveVerticalQuadra(nrQuadra) )
-Road( 'Road Split Line', moveHorizontalRua(13, 2800), 0, moveVerticalQuadra(nrQuadra) )
-Road( 'Road T_Intersection_01', moveHorizontalRua(13, 3100), 0, moveVerticalQuadra(nrQuadra) )
-Road( 'Road T_Intersection_02', moveHorizontalRua(13, 3400), 0, moveVerticalQuadra(nrQuadra) )
-Road( 'Road Tile Small', moveHorizontalRua(13, 3800), 0, moveVerticalQuadra(nrQuadra) )
-Road( 'Road Tile', moveHorizontalRua(13, 4600), 0, moveVerticalQuadra(nrQuadra) )
+nrBuild = 1
+nrRoad = 2
+Road( 'Road Concrete Tile Small', moveHorizontalRua(nrBuild++, -800), 0, moveVerticalRua(nrRoad) )
+Road( 'Road Concrete Tile', moveHorizontalRua(nrBuild++, -500), 0, moveVerticalRua(nrRoad) )
+Road( 'Road Corner_01', moveHorizontalRua(nrBuild++, -300), 0, moveVerticalRua(nrRoad) )
+Road( 'Road Corner_02', moveHorizontalRua(nrBuild++, 100), 0, moveVerticalRua(nrRoad) )
+Road( 'Road Intersection_01', moveHorizontalRua(nrBuild++, 400), 0, moveVerticalRua(nrRoad) )
+Road( 'Road Intersection_02', moveHorizontalRua(nrBuild++, 700), 0, moveVerticalRua(nrRoad) )
+Road( 'Road Lane Bus Stop', moveHorizontalRua(nrBuild++, 1000), 0, moveVerticalRua(nrRoad) )
+Road( 'Road Lane Half', moveHorizontalRua(nrBuild++, 1300), 0, moveVerticalRua(nrRoad) )
+Road( 'Road Lane_01', moveHorizontalRua(nrBuild++, 1600), 0, moveVerticalRua(nrRoad) )
+Road( 'Road Lane_02', moveHorizontalRua(nrBuild++, 1900), 0, moveVerticalRua(nrRoad) )
+Road( 'Road Lane_03', moveHorizontalRua(nrBuild++, 2200), 0, moveVerticalRua(nrRoad) )
+Road( 'Road Lane_04', moveHorizontalRua(nrBuild++, 2500), 0, moveVerticalRua(nrRoad) )
+Road( 'Road Split Line', moveHorizontalRua(nrBuild++, 2800), 0, moveVerticalRua(nrRoad) )
+Road( 'Road T_Intersection_01', moveHorizontalRua(nrBuild++, 3100), 0, moveVerticalRua(nrRoad) )
+Road( 'Road T_Intersection_02', moveHorizontalRua(nrBuild++, 3400), 0, moveVerticalRua(nrRoad) )
+Road( 'Road Tile Small', moveHorizontalRua(nrBuild++, 3800), 0, moveVerticalRua(nrRoad) )
+Road( 'Road Tile', moveHorizontalRua(nrBuild++, 4600), 0, moveVerticalRua(nrRoad) )
 
 // QUADRA 1 - EDIFICIOS
-nrQuadra = 10
-Building( 'Building_Auto Service', moveHorizontalRua(5), 0, moveVerticalQuadra(nrQuadra) )
-Building( 'Building_Bakery', moveHorizontalRua(6, 100), 0, moveVerticalQuadra(nrQuadra) )
-Building( 'Building_Bar', moveHorizontalRua(7), 0, moveVerticalQuadra(nrQuadra) )
-Building( 'Building_Chicken Shop', moveHorizontalRua(8, -100), 0, moveVerticalQuadra(nrQuadra, 100) )
-Building( 'Building_Coffee Shop', moveHorizontalRua(9), 0, moveVerticalQuadra(nrQuadra, -100) )
-Building( 'Building_Drug Store', moveHorizontalRua(10), 0, moveVerticalQuadra(nrQuadra) )
-Building( 'Building_Fast Food', moveHorizontalRua(11), 0, moveVerticalQuadra(nrQuadra, -100) )
-Building( 'Building_Gift Shop', moveHorizontalRua(12), 0, moveVerticalQuadra(nrQuadra, -100) )
-Building( 'Building_Music Store', moveHorizontalRua(13), 0, moveVerticalQuadra(nrQuadra, -100) )
-Building( 'Building_Pizza', moveHorizontalRua(14), 0, moveVerticalQuadra(nrQuadra, -80) )
-Building( 'Building_Restaurant', moveHorizontalRua(15), 0, moveVerticalQuadra(nrQuadra, -100) )
-Building( 'Building_Super Market', moveHorizontalRua(16), 0, moveVerticalQuadra(nrQuadra, -150) )
+nrBuild = 5
+nrRoad = 13
+Building( 'Building_Auto Service', moveHorizontalBuild(nrBuild++), 0, moveVerticalBuild(nrRoad) )
+Building( 'Building_Bakery', moveHorizontalBuild(nrBuild++, 100), 0, moveVerticalBuild(nrRoad) )
+Building( 'Building_Bar', moveHorizontalBuild(nrBuild++), 0, moveVerticalBuild(nrRoad) )
+Building( 'Building_Chicken Shop', moveHorizontalBuild(nrBuild++, -100), 0, moveVerticalBuild(nrRoad, 100) )
+Building( 'Building_Coffee Shop', moveHorizontalBuild(nrBuild++), 0, moveVerticalBuild(nrRoad, -100) )
+Building( 'Building_Drug Store', moveHorizontalBuild(nrBuild++), 0, moveVerticalBuild(nrRoad) )
+Building( 'Building_Fast Food', moveHorizontalBuild(nrBuild++), 0, moveVerticalBuild(nrRoad, -100) )
+Building( 'Building_Gift Shop', moveHorizontalBuild(nrBuild++), 0, moveVerticalBuild(nrRoad, -100) )
+Building( 'Building_Music Store', moveHorizontalBuild(nrBuild++), 155, moveVerticalBuild(nrRoad, -100) )
+Building( 'Building_Pizza', moveHorizontalBuild(nrBuild++), 0, moveVerticalBuild(nrRoad, -80) )
+Building( 'Building_Restaurant', moveHorizontalBuild(nrBuild++), 215, moveVerticalBuild(nrRoad, -100) )
+Building( 'Building_Super Market', moveHorizontalBuild(nrBuild++), 0, moveVerticalBuild(nrRoad, -150) )
 
 // QUADRA 1 - RUAS
-nrQuadra = 11
-Road( 'Road Lane_01', moveHorizontalRua(7), 0, moveVerticalQuadra(nrQuadra, 0) )
-Road( 'Road Lane_01', moveHorizontalRua(8), 0, moveVerticalQuadra(nrQuadra, 0) )
-Road( 'Road Lane_01', moveHorizontalRua(9), 0, moveVerticalQuadra(nrQuadra, 0) )
-Road( 'Road Lane_01', moveHorizontalRua(10), 0, moveVerticalQuadra(nrQuadra, 0) )
-Road( 'Road Lane_01', moveHorizontalRua(11), 0, moveVerticalQuadra(nrQuadra, 0) )
-Road( 'Road Lane_01', moveHorizontalRua(12), 0, moveVerticalQuadra(nrQuadra, 0) )
-Road( 'Road Lane_01', moveHorizontalRua(13), 0, moveVerticalQuadra(nrQuadra, 0) )
+nrBuild = 4
+nrRoad = 14
+for (let i = nrBuild++; i < 16; i++) {
+   Road( 'Road Lane_01', moveHorizontalRua(i, 0, 88), 0, moveVerticalRua(nrRoad, 0) )
+}
+
 
 
 
@@ -222,17 +240,23 @@ const update = () => {
    // scene.rotation.z += 0.01; // Giro Vertical
 }
 
+function onWindowResize () {
+   renderer.setSize( window.innerWidth, window.innerHeight )
+   camera.updateProjectionMatrix()
+   camera.aspect = window.innerWidth / window.innerHeight
+}
+
 const render = () => {
    renderer.render( scene, camera )
 }
 
-const GameLoop = () => {
-   requestAnimationFrame( GameLoop )
+const animate = () => {
+   requestAnimationFrame( animate )
 
    update()
    render()
 }
-GameLoop()
+animate()
 
 export default function SimplePoly() {
   return (
