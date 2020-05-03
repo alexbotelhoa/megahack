@@ -5,11 +5,13 @@ import * as THREE from 'three'
 import { OrbitControls  } from 'three/examples/jsm/controls/OrbitControls.js'
 import { MTLLoader, OBJLoader } from 'three-obj-mtl-loader'
 
+
 // SCENE
 const scene = new THREE.Scene()
 // scene.background = new THREE.Color( 0x000000 )
-scene.background = new THREE.Color().setHSL( 0.6, 0, 1 );
+scene.background = new THREE.Color().setHSL( 0.6, 0, 1 )
 // scene.fog = new THREE.Fog( scene.background, 10000, 15000 ); // SOMBRA
+
 
 // CAMERA
 const camera = new THREE.PerspectiveCamera( 
@@ -24,24 +26,25 @@ camera.position.set(
    6000, // Frente (-) e Costa (+)
 )
 
+
 // LIGHT
 var ambientLight = new THREE.AmbientLight( 0x666666, 0.5 )
-scene.add( ambientLight );
+scene.add( ambientLight )
 
-var hemisphereLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 0.5 );
-hemisphereLight.color.setHSL( 0.6, 1, 0.6 );
-hemisphereLight.groundColor.setHSL( 0.095, 1, 0.75 );
-hemisphereLight.position.set( 0, 3000, 0 );
-scene.add( hemisphereLight );
+var hemisphereLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 0.5 )
+hemisphereLight.color.setHSL( 0.6, 1, 0.6 )
+hemisphereLight.groundColor.setHSL( 0.095, 1, 0.75 )
+hemisphereLight.position.set( 0, 3000, 0 )
+scene.add( hemisphereLight )
 
-var hemisphereLightHelper = new THREE.HemisphereLightHelper( hemisphereLight, 100 );
-scene.add( hemisphereLightHelper );
+var hemisphereLightHelper = new THREE.HemisphereLightHelper( hemisphereLight, 100 )
+scene.add( hemisphereLightHelper )
 
-var directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
-directionalLight.color.setHSL( 0.1, 1, 0.95 );
+var directionalLight = new THREE.DirectionalLight( 0xffffff, 1 )
+directionalLight.color.setHSL( 0.1, 1, 0.95 )
 directionalLight.position.set(- 1, 1.75, 1)
-directionalLight.position.multiplyScalar( 1000 );
-scene.add( directionalLight );
+directionalLight.position.multiplyScalar( 1000 )
+scene.add( directionalLight )
 
 // dirLight.castShadow = true;
 // dirLight.shadow.mapSize.width = 2048;
@@ -57,29 +60,30 @@ scene.add( directionalLight );
 // dirLight.shadow.camera.far = 3500;
 // dirLight.shadow.bias = - 0.0001;
 
-var directionalLightHeper = new THREE.DirectionalLightHelper( directionalLight, 100 );
-scene.add( directionalLightHeper );
+var directionalLightHeper = new THREE.DirectionalLightHelper( directionalLight, 100 )
+scene.add( directionalLightHeper )
+
 
 // GROUND
-var groundTexture = new THREE.ImageUtils.loadTexture( 'models/mtl/Textures/Natures/Floor.png' );
-groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
+var groundTexture = new THREE.ImageUtils.loadTexture( 'models/mtl/Textures/Natures/Floor.png' )
+groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping
 groundTexture.repeat.set( 25, 25 )
 // groundTexture.anisotropy = 160
 groundTexture.encoding = THREE.sRGBEncoding
 
-var groundMaterial = new THREE.MeshLambertMaterial( { map: groundTexture } );
+var groundMaterial = new THREE.MeshLambertMaterial( { map: groundTexture } )
 
-var ground = new THREE.Mesh( new THREE.PlaneBufferGeometry( 20000, 20000 ), groundMaterial );
-ground.position.y =  - 5;
-ground.rotation.x = - Math.PI / 2;
-ground.receiveShadow = true;
-scene.add( ground );
+var ground = new THREE.Mesh( new THREE.PlaneBufferGeometry( 20000, 20000 ), groundMaterial )
+ground.position.y =  - 5
+ground.rotation.x = - Math.PI / 2
+ground.receiveShadow = true
+scene.add( ground )
 
 
 
 // RENDERER
 const renderer = new THREE.WebGLRenderer({ antialias: true })
-renderer.setPixelRatio( window.devicePixelRatio );
+renderer.setPixelRatio( window.devicePixelRatio )
 renderer.setSize( window.innerWidth, window.innerHeight )
 document.body.appendChild( renderer.domElement )
 // renderer.outputEncoding = THREE.sRGBEncoding;
@@ -88,13 +92,13 @@ document.body.appendChild( renderer.domElement )
 
 // CONTROLS
 const controls = new OrbitControls(camera, renderer.domElement)
-controls.enableDamping = true;
-controls.dampingFactor = 0.05;
-controls.screenSpacePanning = false;
-controls.maxPolarAngle = Math.PI / 2;
-controls.minDistance = 1000;
-controls.maxDistance = 20000;
-controls.update();
+controls.enableDamping = true
+controls.dampingFactor = 0.05
+controls.screenSpacePanning = false
+controls.maxPolarAngle = Math.PI / 2
+controls.minDistance = 1000
+controls.maxDistance = 20000
+controls.update()
 
 // DIVERSOS
 // window.addEventListener('resize', onWindowResize, false)
@@ -261,5 +265,5 @@ animate()
 export default function SimplePoly() {
   return (
     <body />
-  );
+  )
 }
