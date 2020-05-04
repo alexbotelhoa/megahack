@@ -1,19 +1,38 @@
 import * as THREE from 'three'
 import { MTLLoader, OBJLoader } from 'three-obj-mtl-loader'
+const scene = new THREE.Scene()
 
-export default function Building (build, x, y, z) {
-   const scene = new THREE.Scene()
-   const mtlLoader = new MTLLoader().setPath( 'models/mtl/Models/Buildings/' )
-   const objLoader = new OBJLoader().setPath( 'models/mtl/Models/Buildings/' )
+function build (build, x, y, z) {
+   const path = 'models/mtl/Models/Buildings/'
+   const mtlLoader = new MTLLoader().setPath( path )
+   const objLoader = new OBJLoader().setPath( path )
+   const texture = new THREE.TextureLoader().load( 'models/mtl/Textures/Buildings/'+build+'.png' )
+   const material = new THREE.MeshPhongMaterial({ map: texture })
 
    mtlLoader.load(build +'.mtl', ( materials ) => {
-      const texture = new THREE.TextureLoader().load( 'models/mtl/Textures/'+build+'.png' )
-      const material = new THREE.MeshPhongMaterial({ map: texture })
       materials.preload()
       objLoader.setMaterials( materials )
       objLoader.load(build +'.obj', ( object ) => {
          object.traverse(( node ) => node.isMesh ? node.material = material : '')
-         return scene.add( object )
+         object.position.set(x, y, z)
+         scene.add( object )
       })
-   })
+   })     
 }
+
+function moveHorizontalBuild (nrPredio, addInicio = 0, addEspaco = 0) {
+   const primeiroPredio = - 9000 + addInicio
+   const espacoEntrePredios = 700 + addEspaco
+   return primeiroPredio + ( espacoEntrePredios * nrPredio )
+}
+
+function moveVerticalBuild (nrQuadra, addInicio = 0, addEspaco = 0) {
+   const primeiraQuadra = - 9000 + addInicio
+   const espacoEntreQuadras = 700 + addEspaco
+   return primeiraQuadra + ( espacoEntreQuadras * nrQuadra )
+}
+
+export function Building() { 
+   build( 'Building_Auto Service', moveHorizontalBuild(1), 0, moveVerticalBuild(1) )
+}
+
