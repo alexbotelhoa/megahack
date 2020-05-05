@@ -74,7 +74,7 @@ scene.add(directionalLightHeper)
 var groundTexture = new THREE.ImageUtils.loadTexture('models/mtl/Textures/Natures/Floor.png')
 groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping
 groundTexture.repeat.set(25, 25)
-// groundTexture.anisotropy = 160
+groundTexture.anisotropy = 160
 groundTexture.encoding = THREE.sRGBEncoding
 
 var groundMaterial = new THREE.MeshLambertMaterial({ map: groundTexture })
@@ -264,8 +264,14 @@ for (let i in rua) {
 
 
 // POSICAO 5 - AVENIDA 13
-edificio = [7, 13, 1, 2, 3, 5, 7, 8, 10, 13, 14, 15, 16, 18]
-for (let i in edificio) (i > 1) ? build(edificio[i], edificio[0] + b++, edificio[1]) : b = 0
+// edificio = [7, 13, 1, 2, 3, 5, 7, 8, 10, 13, 14, 15, 16, 18]
+// for (let i in edificio) (i > 1) ? build(edificio[i], edificio[0] + b++, edificio[1]) : b = 0
+
+
+var imported = document.createElement('script');
+imported.src = './building.js';
+document.head.appendChild(imported); 
+
 
 // rua = [2, 14, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9]
 // for (let i in rua) {
