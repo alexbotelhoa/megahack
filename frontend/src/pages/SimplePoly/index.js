@@ -6,6 +6,15 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { GUI } from 'three/examples/jsm/libs/dat.gui.module.js';  // Criador de caixas de controle
 import { MTLLoader, OBJLoader } from 'three-obj-mtl-loader'
 
+import { Build } from './build'
+import { Road } from './road'
+
+import { Avenida13 } from './avenidas/avenida13'
+
+import { Quadra1 } from './quadras/quadra1'
+import { Quadra13 } from './quadras/quadra13'
+
+let b = 0
 
 // SCENE
 const scene = new THREE.Scene()
@@ -140,7 +149,7 @@ document.addEventListener('mousemove', onDocumentMouseMove, false);  // controle
 
 
 // FUNCTIONS
-function building(build, x, y, z) {
+function constructorBuild([build, x, y, z]) {
    const path = 'models/mtl/Models/Buildings/'
    const mtlLoader = new MTLLoader().setPath(path)
    const objLoader = new OBJLoader().setPath(path)
@@ -158,7 +167,7 @@ function building(build, x, y, z) {
    })
 }
 
-function roads(build, x, y, z) {
+function constructorRoad([build, x, y, z]) {
    const path = 'models/mtl/Models/Road/'
    const mtlLoader = new MTLLoader().setPath(path)
    const objLoader = new OBJLoader().setPath(path)
@@ -178,112 +187,76 @@ function roads(build, x, y, z) {
    })
 }
 
-function moveHorizontalBuild(nrPredio, addInicio = 0, addEspaco = 0) {
-   const primeiroPredio = - 9000 + addInicio
-   const espacoEntrePredios = 700 + addEspaco
-   return primeiroPredio + (espacoEntrePredios * nrPredio)
+// CONSTRUÇÃO DAS QUADRAS
+var Quadra = Quadra1()
+for (let i in Quadra) {
+   constructorBuild(Build(Quadra[i]))
 }
 
-function moveVerticalBuild(nrQuadra, addInicio = 0, addEspaco = 0) {
-   const primeiraQuadra = - 9000 + addInicio
-   const espacoEntreQuadras = 700 + addEspaco
-   return primeiraQuadra + (espacoEntreQuadras * nrQuadra)
+var Quadra = Quadra13()
+for (let i in Quadra) {
+   constructorBuild(Build(Quadra[i]))
 }
 
-function moveHorizontalRua(nrRua, addInicio = 0, addEspaco = 0) {
-   const primeiraRua = - 9000 + addInicio
-   const espacoEntreRuas = 700 + addEspaco
-   return primeiraRua + (espacoEntreRuas * nrRua)
+// CONSTRUÇÃO DAS AVENIDAS
+var Avenida = Avenida13()
+for (let i in Avenida) {
+   // console.log(Avenida13())
+   constructorRoad(Road(Avenida[i]))
 }
 
-function moveVerticalRua(nrAvenida, addInicio = 0, addEspaco = 0) {
-   const primeiraAvenida = - 9000 + addInicio
-   const espacoEntreAvenidas = 700 + addEspaco
-   return primeiraAvenida + (espacoEntreAvenidas * nrAvenida)
-}
-
-// EXEMPLO EDIFICIOS
-function build(nr, nrBuild, nrRoad) {
-   switch (nr) {
-      case 1: building('Building_Auto Service', moveHorizontalBuild(nrBuild++), 0, moveVerticalBuild(nrRoad)); break
-      case 2: building('Building_Bakery', moveHorizontalBuild(nrBuild++), 0, moveVerticalBuild(nrRoad)); break
-      case 3: building('Building_Bar', moveHorizontalBuild(nrBuild++), 0, moveVerticalBuild(nrRoad)); break
-      case 4: building('Building_Books Shop', moveHorizontalBuild(nrBuild++), 0, moveVerticalBuild(nrRoad)); break
-      case 5: building('Building_Chicken Shop', moveHorizontalBuild(nrBuild++), 0, moveVerticalBuild(nrRoad)); break
-      case 6: building('Building_Clothing', moveHorizontalBuild(nrBuild++), 0, moveVerticalBuild(nrRoad)); break
-      case 7: building('Building_Coffee Shop', moveHorizontalBuild(nrBuild++), 0, moveVerticalBuild(nrRoad)); break
-      case 8: building('Building_Drug Store', moveHorizontalBuild(nrBuild++), 0, moveVerticalBuild(nrRoad)); break
-      case 9: building('Building_Factory', moveHorizontalBuild(nrBuild++), 0, moveVerticalBuild(nrRoad)); break
-      case 10: building('Building_Fast Food', moveHorizontalBuild(nrBuild++), 0, moveVerticalBuild(nrRoad)); break
-      case 11: building('Building_Fruits  Shop', moveHorizontalBuild(nrBuild++, -550), 0, moveVerticalBuild(nrRoad, 600)); break
-      case 12: building('Building_Gas Station', moveHorizontalBuild(nrBuild++), 0, moveVerticalBuild(nrRoad)); break
-      case 13: building('Building_Gift Shop', moveHorizontalBuild(nrBuild++), 0, moveVerticalBuild(nrRoad)); break
-      case 14: building('Building_Music Store', moveHorizontalBuild(nrBuild++), 155, moveVerticalBuild(nrRoad)); break
-      case 15: building('Building_Pizza', moveHorizontalBuild(nrBuild++), 0, moveVerticalBuild(nrRoad)); break
-      case 16: building('Building_Restaurant', moveHorizontalBuild(nrBuild++), 215, moveVerticalBuild(nrRoad)); break
-      case 17: building('Building_Shoes Shop', moveHorizontalBuild(nrBuild++), 215, moveVerticalBuild(nrRoad)); break
-      case 18: building('Building_Super Market', moveHorizontalBuild(nrBuild++), 0, moveVerticalBuild(nrRoad)); break
-   }
-}
-
-let b = 0
-let edificio = [1, 1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
-for (let i in edificio) {
-   if (i > 1) build(edificio[i], edificio[0] + b++, edificio[1])
-}
 
 // EXEMPLOS RUAS
-function road(nr, nrBuild, nrRoad) {
-   switch (nr) {
-      case 1: roads('Road Concrete Tile Small', moveHorizontalRua(nrBuild++, -800), 0, moveVerticalRua(nrRoad))
-      case 2: roads('Road Concrete Tile', moveHorizontalRua(nrBuild++, -500), 0, moveVerticalRua(nrRoad))
-      case 3: roads('Road Corner_01', moveHorizontalRua(nrBuild++, -300), 0, moveVerticalRua(nrRoad))
-      case 4: roads('Road Corner_02', moveHorizontalRua(nrBuild++, 100), 0, moveVerticalRua(nrRoad))
-      case 5: roads('Road Intersection_01', moveHorizontalRua(nrBuild++, 400), 0, moveVerticalRua(nrRoad))
-      case 6: roads('Road Intersection_02', moveHorizontalRua(nrBuild++, 700), 0, moveVerticalRua(nrRoad))
-      case 7: roads('Road Lane Bus Stop', moveHorizontalRua(nrBuild++, 1000), 0, moveVerticalRua(nrRoad))
-      case 8: roads('Road Lane Half', moveHorizontalRua(nrBuild++, 1300), 0, moveVerticalRua(nrRoad))
-      case 9: roads('Road Lane_01', moveHorizontalRua(nrBuild++, 1600), 0, moveVerticalRua(nrRoad))
-      case 10: roads('Road Lane_02', moveHorizontalRua(nrBuild++, 1900), 0, moveVerticalRua(nrRoad))
-      case 11: roads('Road Lane_03', moveHorizontalRua(nrBuild++, 2200), 0, moveVerticalRua(nrRoad))
-      case 12: roads('Road Lane_04', moveHorizontalRua(nrBuild++, 2500), 0, moveVerticalRua(nrRoad))
-      case 13: roads('Road Split Line', moveHorizontalRua(nrBuild++, 2800), 0, moveVerticalRua(nrRoad))
-      case 14: roads('Road T_Intersection_01', moveHorizontalRua(nrBuild++, 3100), 0, moveVerticalRua(nrRoad))
-      case 15: roads('Road T_Intersection_02', moveHorizontalRua(nrBuild++, 3400), 0, moveVerticalRua(nrRoad))
-      case 16: roads('Road Tile Small', moveHorizontalRua(nrBuild++, 3800), 0, moveVerticalRua(nrRoad))
-      case 17: roads('Road Tile', moveHorizontalRua(nrBuild++, 4600), 0, moveVerticalRua(nrRoad))
-   }
-}
+// function moveHorizontalRua(nrRua, addInicio = 0, addEspaco = 0) {
+//    const primeiraRua = - 9000 + addInicio
+//    const espacoEntreRuas = 700 + addEspaco
+//    return primeiraRua + (espacoEntreRuas * nrRua)
+// }
 
-let rua = [1, 2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
-for (let i in rua) {
-   (i > 1) ? road(rua[i], rua[0] + b++, rua[1]) : b = 0
-}
+// function moveVerticalRua(nrAvenida, addInicio = 0, addEspaco = 0) {
+//    const primeiraAvenida = - 9000 + addInicio
+//    const espacoEntreAvenidas = 700 + addEspaco
+//    return primeiraAvenida + (espacoEntreAvenidas * nrAvenida)
+// }
 
+// function road(nr, nrBuild, nrRoad) {
+//    switch (nr) {
+//       case 1: roads('Road Concrete Tile Small', moveHorizontalRua(nrBuild++, -800), 0, moveVerticalRua(nrRoad))
+//       case 2: roads('Road Concrete Tile', moveHorizontalRua(nrBuild++, -500), 0, moveVerticalRua(nrRoad))
+//       case 3: roads('Road Corner_01', moveHorizontalRua(nrBuild++, -300), 0, moveVerticalRua(nrRoad))
+//       case 4: roads('Road Corner_02', moveHorizontalRua(nrBuild++, 100), 0, moveVerticalRua(nrRoad))
+//       case 5: roads('Road Intersection_01', moveHorizontalRua(nrBuild++, 400), 0, moveVerticalRua(nrRoad))
+//       case 6: roads('Road Intersection_02', moveHorizontalRua(nrBuild++, 700), 0, moveVerticalRua(nrRoad))
+//       case 7: roads('Road Lane Bus Stop', moveHorizontalRua(nrBuild++, 1000), 0, moveVerticalRua(nrRoad))
+//       case 8: roads('Road Lane Half', moveHorizontalRua(nrBuild++, 1300), 0, moveVerticalRua(nrRoad))
+//       case 9: roads('Road Lane_01', moveHorizontalRua(nrBuild++, 1600), 0, moveVerticalRua(nrRoad))
+//       case 10: roads('Road Lane_02', moveHorizontalRua(nrBuild++, 1900), 0, moveVerticalRua(nrRoad))
+//       case 11: roads('Road Lane_03', moveHorizontalRua(nrBuild++, 2200), 0, moveVerticalRua(nrRoad))
+//       case 12: roads('Road Lane_04', moveHorizontalRua(nrBuild++, 2500), 0, moveVerticalRua(nrRoad))
+//       case 13: roads('Road Split Line', moveHorizontalRua(nrBuild++, 2800), 0, moveVerticalRua(nrRoad))
+//       case 14: roads('Road T_Intersection_01', moveHorizontalRua(nrBuild++, 3100), 0, moveVerticalRua(nrRoad))
+//       case 15: roads('Road T_Intersection_02', moveHorizontalRua(nrBuild++, 3400), 0, moveVerticalRua(nrRoad))
+//       case 16: roads('Road Tile Small', moveHorizontalRua(nrBuild++, 3800), 0, moveVerticalRua(nrRoad))
+//       case 17: roads('Road Tile', moveHorizontalRua(nrBuild++, 4600), 0, moveVerticalRua(nrRoad))
+//    }
+// }
 
-
-
-// POSICAO 5 - AVENIDA 13
-// edificio = [7, 13, 1, 2, 3, 5, 7, 8, 10, 13, 14, 15, 16, 18]
-// for (let i in edificio) (i > 1) ? build(edificio[i], edificio[0] + b++, edificio[1]) : b = 0
-
-
-var imported = document.createElement('script');
-imported.src = './building.js';
-document.head.appendChild(imported); 
-
-
-// rua = [2, 14, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9]
+// let rua = [1, 2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
 // for (let i in rua) {
 //    (i > 1) ? road(rua[i], rua[0] + b++, rua[1]) : b = 0
 // }
 
+
+
+
+
+
 // QUADRA 1 - RUAS
-let nrBuild = 6
-let nrRoad = 14
-for (let i = nrBuild++; i < 17; i++) {
-   roads('Road Lane_01', moveHorizontalRua(i, 0, 87), 0, moveVerticalRua(nrRoad, 0))
-}
+// let nrBuild = 6
+// let nrRoad = 14
+// for (let i = nrBuild++; i < 17; i++) {
+//    roads('Road Lane_01', moveHorizontalRua(i, 0, 87), 0, moveVerticalRua(nrRoad, 0))
+// }
 
 
 
