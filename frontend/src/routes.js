@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import SimplePoly from './pages/SimplePoly';
-// import Teste from './pages/Teste';
+import Teste from './pages/Teste';
 
 export default function Routes() {
   return (
