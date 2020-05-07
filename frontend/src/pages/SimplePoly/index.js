@@ -9,10 +9,10 @@ import { MTLLoader, OBJLoader } from 'three-obj-mtl-loader'
 import { Build } from './build'
 import { Road } from './road'
 
-import { Avenida13 } from './avenidas/avenida13'
-
 import { Quadra1 } from './quadras/quadra1'
 import { Quadra13 } from './quadras/quadra13'
+
+import { Avenida14 } from './avenidas/avenida14'
 
 let b = 0
 
@@ -199,9 +199,8 @@ for (let i in Quadra) {
 }
 
 // CONSTRUÇÃO DAS AVENIDAS
-var Avenida = Avenida13()
+var Avenida = Avenida14()
 for (let i in Avenida) {
-   // console.log(Avenida13())
    constructorRoad(Road(Avenida[i]))
 }
 
